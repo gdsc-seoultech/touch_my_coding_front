@@ -3,7 +3,7 @@ import React from "react";
 const Index = () => {
   return (
     <div>
-      <p>guide page</p>
+      <p>신청페이지</p>
     </div>
   );
 };

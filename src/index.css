@@ -18,3 +18,11 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
 }
+
+iframe {
+  width: 400px;
+  height: 600px;
+  display: block;
+  border: 1px solid black;
+  margin: 20px auto;
+}
