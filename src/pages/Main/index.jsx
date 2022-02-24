@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { Controlled as CodeMirror } from "react-codemirror2";
+import { useSpeechContext } from "@speechly/react-client";
+import { PushToTalkButton, BigTranscript, ErrorPanel } from "@speechly/react-ui";
+
+import { textRead } from "../../utils/TextToSpeech";
 
 import { Button, Container, InputGroup, FormControl, CloseButton } from "react-bootstrap";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -97,6 +101,9 @@ const Index = () => {
   const [nextText, setNextText] = useState("");
 
   const [code, setCode] = useState({ html: "", css: "", js: "" });
+  const [command, setCommand] = useState("");
+
+  const { segment } = useSpeechContext();
 
   const createFrame = (code) => {
     const { html, css, js } = code;
@@ -123,6 +130,14 @@ const Index = () => {
     el.innerHTML = innerhtml;
     return el;
   };
+
+  useEffect(() => {
+    if (segment) {
+      if (segment.isFinal) {
+        setCommand(segment);
+      }
+    }
+  }, [segment]);
 
   return (
     <CodeWrapper>
