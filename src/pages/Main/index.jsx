@@ -3,9 +3,6 @@ import styled from "styled-components";
 
 import { Controlled as CodeMirror } from "react-codemirror2";
 import { useSpeechContext } from "@speechly/react-client";
-import { PushToTalkButton, BigTranscript, ErrorPanel } from "@speechly/react-ui";
-
-import { textRead } from "../../utils/TextToSpeech";
 
 import { Button, Container, InputGroup, FormControl, CloseButton } from "react-bootstrap";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -41,65 +38,6 @@ const Side = styled.div`
 `;
 
 const Index = () => {
-  // const [htmlCode, setHtmlCode] = useState();
-  // const [cssCode, setCssCode] = useState();
-  // const [jsCode, setJsCode] = useState();
-
-  const [names, setNames] = useState([
-    { id: 1, text: "index.html", type: "html" },
-    { id: 2, text: "script.js", type: "js" },
-    { id: 3, text: "style.css", type: "css" },
-  ]);
-
-  const onChangeInput = (e) => {
-    setNextText(e.target.value);
-  };
-
-  const onKeyPressInput = (e) => {
-    if (e.key === "Enter") {
-      onClickInput();
-    }
-  };
-  const onClickInput = () => {
-    //   switch (true) {
-    //     case nextText.slice(-5) === ".html":
-    //       return setType("html");
-    //     default:
-    //       return setType("fail");
-    //   }
-    // };
-
-    if (nextText.slice(-5) === ".html") {
-      setType("html");
-    } else if (nextText.slice(-4) === ".css") {
-      setType("css");
-    } else if (nextText.slice(-3) === ".js") {
-      setType("js");
-    } else {
-      alert("!!!!!!!!!!!!!!!");
-    }
-    if (type === "") {
-    } else {
-      const nextNames = names.concat({
-        id: nextId,
-        text: nextText,
-        type: type,
-      });
-
-      setNextId(nextId + 1);
-      setNames(nextNames);
-      setNextText("");
-      setType("");
-    }
-  };
-  const onRemove = (id) => {
-    const nextNames = names.filter((name) => name.id !== id);
-    setNames(nextNames);
-  };
-  const [type, setType] = useState("");
-  const [nextId, setNextId] = useState(4);
-  const [nextText, setNextText] = useState("");
-
   const [code, setCode] = useState({ html: "", css: "", js: "" });
   const [command, setCommand] = useState("");
 
@@ -141,7 +79,7 @@ const Index = () => {
 
   return (
     <CodeWrapper>
-      <Side>
+      {/* <Side>
         <div>
           <h4 className="m-3">Files</h4>
           <div>
@@ -153,17 +91,17 @@ const Index = () => {
             ))}
           </div>
           <InputGroup className="mb-3">
-            <FormControl placeholder="파일명" value={nextText} onChange={onChangeInput} onKeyPress={onKeyPressInput} />
-            <Button variant="outline-secondary" onClick={onClickInput}>
+            <FormControl placeholder="파일명" value={""} />
+            <Button variant="outline-secondary">
               추가
             </Button>
           </InputGroup>
         </div>
-      </Side>
+      </Side> */}
       <div className="content">
         <Container fluid>
           <Tabs>
-            <TabList>
+            {/* <TabList>
               {names.map((name) => (
                 <Tab>
                   {name.text}
@@ -218,7 +156,7 @@ const Index = () => {
                   </TabPanel>
                 )}
               </div>
-            ))}
+            ))} */}
 
             {/* <TabPanel>
               <CodeMirror
