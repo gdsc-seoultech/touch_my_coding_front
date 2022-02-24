@@ -1,11 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const Index = () => {
-  //toDo: html code, css code, js code를 가져오고 그 코드를 기반으로 결과물을 만들어준다.
-  //toDo: 이 때 페이지별로 분리가 되어있다고 생각하고 그 페이지 또한 분리해줘야함.
+  const createFrame = (code) => {
+    const { html, css, js } = code;
+    const currentFrame = document.querySelector("#iframe");
+    const frameEl = document.createElement("iframe");
+
+    if (currentFrame) {
+      currentFrame.remove();
+    }
+
+    const el = document.querySelector("#root");
+    frameEl.setAttribute("id", "iframe");
+    frameEl.setAttribute("class", "output");
+    el.appendChild(frameEl);
+    const doc = document.querySelector("#iframe").contentWindow.document;
+    const head = doc.querySelector("head");
+    doc.body.innerHTML = html;
+    head.appendChild(createEl("script", js));
+    head.appendChild(createEl("style", css));
+  };
+
+  const createEl = (type, innerhtml) => {
+    const el = document.createElement(type);
+    el.innerHTML = innerhtml;
+    return el;
+  };
+
+  useEffect(() => {
+    // server로 부터 코드를 가져오는 방식
+    return true;
+  });
+
+  const test = () => {
+    window.navigator.vibrate([2000, 1000, 500]);
+  };
   return (
     <div>
-      <p>result page</p>
+      <p onClick={test}>result page</p>
+      <h1>test code</h1>
     </div>
   );
 };

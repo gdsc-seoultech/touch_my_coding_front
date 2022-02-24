@@ -7,6 +7,8 @@ import { useSpeechContext } from "@speechly/react-client";
 import { Button, Container, InputGroup, FormControl, CloseButton } from "react-bootstrap";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
+import { getLocalStorage, saveLocalStorage } from "@Utils/storage";
+import { mainCommand } from "@Utils/command";
 
 const CodeWrapper = styled.div`
   display: flex;
@@ -38,12 +40,21 @@ const Side = styled.div`
 `;
 
 const Index = () => {
-  const [code, setCode] = useState({ html: "", css: "", js: "" });
+  const [code, setCode] = useState([]);
   const [command, setCommand] = useState("");
 
   const { segment } = useSpeechContext();
 
+  const createPage = (pageName) => {
+    setCode([...code, { pageName: pageName, html: "", css: "", js: "" }]);
+  };
+
+  const deletePage = (pageName) => {
+    setCode(code.filter((el) => el.pageName !== pageName));
+  };
+
   const createFrame = (code) => {
+    saveLocalStorage(code);
     const { html, css, js } = code;
     const currentFrame = document.querySelector("#iframe");
     const frameEl = document.createElement("iframe");
@@ -76,6 +87,21 @@ const Index = () => {
       }
     }
   }, [segment]);
+
+  // 초기 실행 값
+  useEffect(() => {
+    const prevCode = getLocalStorage();
+    if (!prevCode) {
+      setCode("");
+    } else {
+      setCode(prevCode);
+    }
+  }, []);
+
+  // 음성 명령이슈가 생길 때 마다
+  useEffect(() => {
+    mainCommand(command);
+  }, [command]);
 
   return (
     <CodeWrapper>

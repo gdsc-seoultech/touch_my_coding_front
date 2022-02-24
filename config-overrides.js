@@ -8,5 +8,6 @@ module.exports = override(
     "@Layouts": path.resolve(__dirname, "./src/layouts"),
     "@Pages": path.resolve(__dirname, "./src/pages"),
     "@Hooks": path.resolve(__dirname, "./src/hooks"),
+    "@Utils": path.resolve(__dirname, "./src/utils"),
   })
 );
