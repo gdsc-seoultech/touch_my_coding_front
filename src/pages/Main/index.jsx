@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import Modal from "react-modal";
 
 import { Controlled as CodeMirror } from "react-codemirror2";
 import { useSpeechContext } from "@speechly/react-client";
@@ -8,7 +9,12 @@ import { Button, Container, InputGroup, FormControl, CloseButton } from "react-b
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import { getLocalStorage, saveLocalStorage } from "@Utils/storage";
-import { mainCommand } from "@Utils/command";
+
+import { modalStyles } from "../../components/modalOption";
+import TitleModal from "@Components/TitleModal";
+import IconModal from "@Components/IconModal";
+import ImageModal from "@Components/ImageModal";
+import { textRead } from "@Utils/TextToSpeech";
 
 const CodeWrapper = styled.div`
   display: flex;
@@ -43,56 +49,59 @@ const Index = () => {
   const [code, setCode] = useState([]);
   const [command, setCommand] = useState("");
 
+  const [pageName, setPageName] = useState("");
+
+  const [isOpen, setIsOpen] = useState(true);
+  const [isOpenIcon, setIsOpenIcon] = useState(false);
+  const [isOpenImage, setIsOpenImage] = useState(false);
+
   const { segment } = useSpeechContext();
 
-  const createPage = (pageName) => {
-    setCode([...code, { pageName: pageName, html: "", css: "", js: "" }]);
+  const movePage = (pageName) => {
+    setPageName(pageName);
   };
 
   const deletePage = (pageName) => {
-    setCode(code.filter((el) => el.pageName !== pageName));
+    const filterValue = code.filter((el) => el.pageName !== pageName);
+    if (filterValue) {
+      setCode(filterValue);
+    } else {
+      textRead("not valid page name");
+    }
   };
 
-  const createFrame = (code) => {
+  const pageList = () => {
+    textRead(`There are ${code.length} pages`);
+    code.map((item) => textRead(item.pageName));
+  };
+
+  const buildApp = () => {
     saveLocalStorage(code);
-    const { html, css, js } = code;
-    const currentFrame = document.querySelector("#iframe");
-    const frameEl = document.createElement("iframe");
-
-    if (currentFrame) {
-      currentFrame.remove();
-    }
-
-    const el = document.querySelector("#root");
-    frameEl.setAttribute("id", "iframe");
-    frameEl.setAttribute("class", "output");
-    el.appendChild(frameEl);
-    const doc = document.querySelector("#iframe").contentWindow.document;
-    const head = doc.querySelector("head");
-    doc.body.innerHTML = html;
-    head.appendChild(createEl("script", js));
-    head.appendChild(createEl("style", css));
   };
 
-  const createEl = (type, innerhtml) => {
-    const el = document.createElement(type);
-    el.innerHTML = innerhtml;
-    return el;
+  const modalDoneFunc = (pageName) => {
+    setCode([...code, { pageName: pageName, html: "", css: "", js: "" }]);
+    setIsOpen(false);
   };
 
-  useEffect(() => {
-    if (segment) {
-      if (segment.isFinal) {
-        setCommand(segment);
-      }
-    }
-  }, [segment]);
+  const modalCancleFucn = () => {
+    setIsOpen(false);
+  };
+
+  // useEffect(() => {
+  //   if (segment) {
+  //     if (segment.isFinal) {
+  //       setCommand(segment);
+  //     }
+  //   }
+  // }, [segment]);
 
   // 초기 실행 값
   useEffect(() => {
     const prevCode = getLocalStorage();
     if (!prevCode) {
       setCode("");
+      // setIsOpen(true);
     } else {
       setCode(prevCode);
     }
@@ -100,7 +109,28 @@ const Index = () => {
 
   // 음성 명령이슈가 생길 때 마다
   useEffect(() => {
-    mainCommand(command);
+    switch (command) {
+      case "guide":
+        return textRead("guide text");
+      case "new page":
+        return setIsOpen(true);
+      case "move page":
+        return movePage("");
+      case "delete page":
+        return deletePage("");
+      case "page list":
+        return pageList();
+      case "start project":
+        return "";
+      case "search icon":
+        return setIsOpenIcon(true);
+      case "search image":
+        return setIsOpenImage(true);
+      case "build app":
+        return buildApp();
+      default:
+        return textRead("not valiid command. Try it again.");
+    }
   }, [command]);
 
   return (
@@ -197,6 +227,7 @@ const Index = () => {
                 }}
               />
             </TabPanel>
+
             <TabPanel>
               <CodeMirror
                 value={code.css}
@@ -271,10 +302,19 @@ const Index = () => {
             </Col>
           </Row> */}
         </Container>
-        <Button className="m-3" onClick={() => createFrame(code)}>
-          저장
+        <Button className="m-3" onClick={() => saveLocalStorage(code)}>
+          저장s
         </Button>
       </div>
+      <Modal isOpen={isOpen} ariaHideApp={false} style={modalStyles} contentLabel="set title modal">
+        <TitleModal isOpen={isOpen} doneFunc={modalDoneFunc} cancleFunc={modalCancleFucn} />
+      </Modal>
+      <Modal isOpen={isOpenIcon} ariaHideApp={false} style={modalStyles} contentLabel="set icon modal">
+        <IconModal />
+      </Modal>
+      <Modal isOpen={isOpenImage} ariaHideApp={false} style={modalStyles} contentLabel="set image modal">
+        <ImageModal />
+      </Modal>
     </CodeWrapper>
   );
 };

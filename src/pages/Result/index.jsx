@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 const Index = () => {
+  const [code, setCode] = useState([{}]);
+  const [pageName, setPageName] = useState("");
+
   const createFrame = (code) => {
     const { html, css, js } = code;
     const currentFrame = document.querySelector("#iframe");
@@ -28,19 +31,26 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // server로 부터 코드를 가져오는 방식
-    return true;
-  });
+    setCode([
+      {
+        pageName: "main",
+        html: "<div><p class='a'>hello world</p></div>",
+        css: ".a { color: red }",
+      },
+      {
+        pageName: "second",
+        html: "<div><p class='a'>hello world</p></div>",
+        css: ".a { color: blue }",
+      },
+      {
+        pageName: "third",
+        html: "<div><p class='a'>hello world</p></div>",
+        css: ".a { color: yellow }",
+      },
+    ]);
+  }, []);
 
-  const test = () => {
-    window.navigator.vibrate([2000, 1000, 500]);
-  };
-  return (
-    <div>
-      <p onClick={test}>result page</p>
-      <h1>test code</h1>
-    </div>
-  );
+  return <div>{pageName ? createFrame(code.filter((el) => el["pageName"] === "second")) : createFrame(code[0])}</div>;
 };
 
 export default Index;

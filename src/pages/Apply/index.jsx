@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Button, Container } from "react-bootstrap";
-
+import { textRead } from "../../utils/TextToSpeech";
 const Index = () => {
+  useEffect(() => {
+    textRead("abcd");
+    console.log("apply page");
+  }, []);
   return (
     <Container>
       <p className="mt-3">신청페이지</p>
