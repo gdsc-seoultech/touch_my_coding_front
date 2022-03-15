@@ -54,7 +54,7 @@ const TitleModal = ({ isOpen, doneFunc, cancleFunc }) => {
       </Form.Group>
 
       <div className="modal-button-wrapper">
-        <Button variant="primary" size="lg" onClick={doneFunc}>
+        <Button variant="primary" size="lg" onClick={() => doneFunc(title)}>
           Done
         </Button>
         <Button variant="dark" size="lg" onClick={cancleFunc}>

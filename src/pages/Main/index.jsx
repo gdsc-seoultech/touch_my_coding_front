@@ -1,61 +1,83 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Modal from "react-modal";
-
 import { Controlled as CodeMirror } from "react-codemirror2";
 import { useSpeechContext } from "@speechly/react-client";
-
-import { Button, Container, InputGroup, Form, CloseButton, Row, Col } from "react-bootstrap";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import { Button, Container, Row, Col } from "react-bootstrap";
 import "react-tabs/style/react-tabs.css";
-import { getLocalStorage, saveLocalStorage } from "@Utils/storage";
 
-import { modalStyles } from "../../components/modalOption";
+import { modalStyles } from "@Components/modalOption";
+
 import TitleModal from "@Components/TitleModal";
 import IconModal from "@Components/IconModal";
 import ImageModal from "@Components/ImageModal";
+import Header from "@Components/Header";
+
 import { textRead } from "@Utils/TextToSpeech";
+import { getLocalStorage, saveLocalStorage } from "@Utils/storage";
 
 const CodeWrapper = styled.div`
-  /* display: flex;
-  flex-flow: row nowrap;
   .content {
-    width: 80%;
-  }
-  .side {
-    width: 20%;
-    height: 900px;
-    position: sticky;
-    top: 0;
-    background-color: black;
-    color: white;
-  } */
-  /* .touch-wrapper {
-    display: flex;
-    justify-content: space-between;
+    margin-top: 20px;
   }
 
-  .touch-col {
-    width: 30%;
+  .current-page {
+    margin: 20px;
 
-    p {
-      text-align: center;
+    span {
+      font-weight: 700;
     }
-  } */
+  }
+
+  .code-category {
+    text-align: center;
+  }
+
+  .button-wrapper {
+    margin: 40px 16px 0px 16px;
+
+    button {
+      margin-right: 16px;
+    }
+  }
+
+  .code-page-head {
+    margin: 20px 16px 0px 16px;
+    font-weight: 500;
+    font-size: 20px;
+  }
+
+  .code-page-list {
+    margin: 16px;
+    display: flex;
+
+    button {
+      margin: 0px 16px 16px 0px;
+    }
+  }
+
+  .empty-page {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+  }
 `;
 
 const Index = () => {
-  const [code, setCode] = useState([]);
+  const [code, setCode] = useState([{ pageName: "index", htm: "", css: "", js: "" }]);
 
-  const [pageName, setPageName] = useState("");
+  const [pageName, setPageName] = useState("index");
 
   const [command, setCommand] = useState("");
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isOpenIcon, setIsOpenIcon] = useState(false);
   const [isOpenImage, setIsOpenImage] = useState(false);
 
   const { segment } = useSpeechContext();
+
+  const currentCode = code.filter((el) => el.pageName === pageName)[0];
 
   const movePage = (pageName) => {
     setPageName(pageName);
@@ -82,10 +104,15 @@ const Index = () => {
   const modalDoneFunc = (pageName) => {
     setCode([...code, { pageName: pageName, html: "", css: "", js: "" }]);
     setIsOpen(false);
+    setPageName(pageName);
   };
 
   const modalCancleFucn = () => {
     setIsOpen(false);
+  };
+
+  const resetCode = () => {
+    setCode([]);
   };
 
   // useEffect(() => {
@@ -100,7 +127,7 @@ const Index = () => {
   useEffect(() => {
     const prevCode = getLocalStorage();
     if (!prevCode) {
-      setCode("");
+      // setCode("");
       // setIsOpen(true);
     } else {
       setCode(prevCode);
@@ -135,57 +162,104 @@ const Index = () => {
 
   return (
     <CodeWrapper>
-      <div className="content">
-        <Container fluid>
-          <Row md={3}>
-            <Col>
-              <p>html</p>
-              <CodeMirror
-                value={code.html}
-                options={{
-                  mode: "xml",
-                  theme: "material",
-                  lineNumbers: true,
-                }}
-                onBeforeChange={(editor, data, value) => {
-                  setCode({ ...code, html: value });
-                }}
-              />
-            </Col>
-            <Col>
-              <p>css</p>
-              <CodeMirror
-                value={code.css}
-                options={{
-                  mode: "css",
-                  theme: "material",
-                  lineNumbers: true,
-                }}
-                onBeforeChange={(editor, data, value) => {
-                  setCode({ ...code, css: value });
-                }}
-              />
-            </Col>
-            <Col>
-              <p>js</p>
-              <CodeMirror
-                value={code.js}
-                options={{
-                  mode: "xml",
-                  theme: "material",
-                  lineNumbers: true,
-                }}
-                onBeforeChange={(editor, data, value) => {
-                  setCode({ ...code, js: value });
-                }}
-              />
-            </Col>
-          </Row>
-        </Container>
+      <Header />
+      {pageName && (
+        <p className="current-page">
+          Current Page: <span>{pageName}</span>
+        </p>
+      )}
 
-        <Button className="m-3" onClick={() => saveLocalStorage(code)}>
-          저장s
-        </Button>
+      <div className="content">
+        {code.length !== 0 && pageName ? (
+          <Container fluid>
+            <Row md={3}>
+              <Col>
+                <p className="code-category">html</p>
+                <CodeMirror
+                  value={currentCode?.html}
+                  options={{
+                    mode: "xml",
+                    theme: "material",
+                    lineNumbers: true,
+                  }}
+                  onBeforeChange={(editor, data, value) => {
+                    setCode([
+                      ...code.filter((el) => el.pageName !== pageName),
+                      { pageName: pageName, html: value, css: currentCode?.css, js: currentCode?.js },
+                    ]);
+                  }}
+                />
+              </Col>
+              <Col>
+                <p className="code-category">css</p>
+                <CodeMirror
+                  value={currentCode?.css}
+                  options={{
+                    mode: "css",
+                    theme: "material",
+                    lineNumbers: true,
+                  }}
+                  onBeforeChange={(editor, data, value) => {
+                    setCode([
+                      ...code.filter((el) => el.pageName !== pageName),
+                      { pageName: pageName, html: currentCode?.html, css: value, js: currentCode?.js },
+                    ]);
+                  }}
+                />
+              </Col>
+              <Col>
+                <p className="code-category">js</p>
+                <CodeMirror
+                  value={currentCode?.js}
+                  options={{
+                    mode: "xml",
+                    theme: "material",
+                    lineNumbers: true,
+                  }}
+                  onBeforeChange={(editor, data, value) => {
+                    setCode([
+                      ...code.filter((el) => el.pageName !== pageName),
+                      { pageName: pageName, html: currentCode?.html, css: currentCode?.css, js: value },
+                    ]);
+                  }}
+                />
+              </Col>
+            </Row>
+          </Container>
+        ) : (
+          <p className="empty-page">Create the page</p>
+        )}
+        {code.length !== 0 && (
+          <div>
+            <h2 className="code-page-head">Page List</h2>
+            <div className="code-page-list">
+              {code
+                .sort((a, b) => (a.pageName > b.pageName ? 1 : -1))
+                .map((item) => (
+                  <Button size="lg" variant="outline-primary" onClick={() => setPageName(item.pageName)}>
+                    {item.pageName}
+                  </Button>
+                ))}
+            </div>
+          </div>
+        )}
+        <div className="button-wrapper">
+          <Button variant="primary" size="lg" onClick={() => saveLocalStorage(code)}>
+            Save
+          </Button>
+          <Button variant="warning" size="lg" onClick={resetCode}>
+            Reset
+          </Button>
+          <Button variant="primary" size="lg" onClick={() => setIsOpen(true)}>
+            New page
+          </Button>
+          <Button variant="primary" size="lg" onClick={() => deletePage("")}>
+            delete page
+          </Button>
+          <Button variant="primary" size="lg" onClick={pageList}>
+            pageList
+          </Button>
+        </div>
       </div>
       <Modal isOpen={isOpen} ariaHideApp={false} style={modalStyles} contentLabel="set title modal">
         <TitleModal isOpen={isOpen} doneFunc={modalDoneFunc} cancleFunc={modalCancleFucn} />

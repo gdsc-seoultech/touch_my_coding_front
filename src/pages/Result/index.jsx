@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { getLocalStorage } from "@Utils/storage";
+import * as vibe from "@Utils/vibrate";
 
 const Index = () => {
+  /*
+   * 진동 부여해주는 기능 추가, 페이지 링크 기능 추가
+   */
+
   const [code, setCode] = useState([{}]);
-  const [pageName, setPageName] = useState("");
+  const [pageName, setPageName] = useState("index");
 
   const createFrame = (code) => {
     const { html, css, js } = code;
@@ -22,6 +28,30 @@ const Index = () => {
     doc.body.innerHTML = html;
     head.appendChild(createEl("script", js));
     head.appendChild(createEl("style", css));
+
+    const iframe = document.getElementById("iframe");
+    const innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+    const vibeList = [
+      {
+        tagName: "div",
+        vibeFunc: vibe.vibeButton,
+      },
+      {
+        tagName: "p",
+        vibeFunc: vibe.vibeP,
+      },
+    ];
+
+    for (let i = 0; i < vibeList.length; i++) {
+      const tagList = innerDoc.getElementsByTagName(`${vibeList[i].tagName}`);
+
+      for (let j = 0; j < tagList.length; j++) {
+        tagList[j].addEventListener("click", () => {
+          vibeList[i].vibeFunc();
+        });
+      }
+    }
   };
 
   const createEl = (type, innerhtml) => {
@@ -31,26 +61,10 @@ const Index = () => {
   };
 
   useEffect(() => {
-    setCode([
-      {
-        pageName: "main",
-        html: "<div><p class='a'>hello world</p></div>",
-        css: ".a { color: red }",
-      },
-      {
-        pageName: "second",
-        html: "<div><p class='a'>hello world</p></div>",
-        css: ".a { color: blue }",
-      },
-      {
-        pageName: "third",
-        html: "<div><p class='a'>hello world</p></div>",
-        css: ".a { color: yellow }",
-      },
-    ]);
+    setCode(getLocalStorage());
   }, []);
 
-  return <div>{pageName ? createFrame(code.filter((el) => el["pageName"] === "second")) : createFrame(code[0])}</div>;
+  return <>{!pageName ? createFrame(code.filter((el) => el["pageName"] === "index")) : createFrame(code[0])}</>;
 };
 
 export default Index;

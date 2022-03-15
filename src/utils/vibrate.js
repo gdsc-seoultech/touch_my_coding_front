@@ -1,8 +1,10 @@
 export const vibeButton = () => {
+  alert("@2");
   window.navigator.vibrate([100, 500, 10]);
 };
 
 export const vibeDiv = () => {
+  alert("$");
   window.navigator.vibrate([100, 500, 10]);
 };
 
@@ -29,4 +31,9 @@ export const vibeA = () => {
 };
 export const vibeImg = () => {
   window.navigator.vibrate([100, 500, 10]);
+};
+
+export const vibeP = () => {
+  alert("!");
+  window.navigator.vibrate([100, 300, 20]);
 };
