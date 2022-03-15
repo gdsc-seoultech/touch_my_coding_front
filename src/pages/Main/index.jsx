@@ -65,7 +65,7 @@ const CodeWrapper = styled.div`
 `;
 
 const Index = () => {
-  const [code, setCode] = useState([{ pageName: "index", htm: "", css: "", js: "" }]);
+  const [code, setCode] = useState([{ pageName: "index", html: "", css: "", js: "" }]);
 
   const [pageName, setPageName] = useState("index");
 
