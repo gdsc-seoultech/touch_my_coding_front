@@ -73,7 +73,7 @@ const Index = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenIcon, setIsOpenIcon] = useState(false);
-  const [isOpenImage, setIsOpenImage] = useState(false);
+  const [isOpenImage, setIsOpenImage] = useState(true);
 
   const { segment } = useSpeechContext();
 
@@ -109,6 +109,18 @@ const Index = () => {
 
   const modalCancleFucn = () => {
     setIsOpen(false);
+  };
+  const modalCancelFucnIcon = () => {
+    setIsOpenIcon(false);
+  };
+  const modalDoneFuncIcon = () => {
+    setIsOpenIcon(false);
+  };
+  const modalCancelFucnImage = () => {
+    setIsOpenImage(false);
+  };
+  const modalDoneFuncImage = () => {
+    setIsOpenImage(false);
   };
 
   const resetCode = () => {
@@ -260,15 +272,65 @@ const Index = () => {
             pageList
           </Button>
         </div>
+        <Container fluid>
+          <Row md={3}>
+            <Col>
+              <p>html</p>
+              <CodeMirror
+                value={code.html}
+                options={{
+                  mode: "xml",
+                  theme: "material",
+                  lineNumbers: true,
+                }}
+                onBeforeChange={(editor, data, value) => {
+                  setCode({ ...code, html: value });
+                }}
+              />
+            </Col>
+            <Col>
+              <p>css</p>
+              <CodeMirror
+                value={code.css}
+                options={{
+                  mode: "css",
+                  theme: "material",
+                  lineNumbers: true,
+                }}
+                onBeforeChange={(editor, data, value) => {
+                  setCode({ ...code, css: value });
+                }}
+              />
+            </Col>
+            <Col>
+              <p>js</p>
+              <CodeMirror
+                value={code.js}
+                options={{
+                  mode: "xml",
+                  theme: "material",
+                  lineNumbers: true,
+                }}
+                onBeforeChange={(editor, data, value) => {
+                  setCode({ ...code, js: value });
+                }}
+              />
+            </Col>
+          </Row>
+        </Container>
+
+        <Button className="m-3" onClick={() => saveLocalStorage(code)}>
+          저장
+        </Button>
       </div>
       <Modal isOpen={isOpen} ariaHideApp={false} style={modalStyles} contentLabel="set title modal">
         <TitleModal isOpen={isOpen} doneFunc={modalDoneFunc} cancleFunc={modalCancleFucn} />
       </Modal>
       <Modal isOpen={isOpenIcon} ariaHideApp={false} style={modalStyles} contentLabel="set icon modal">
-        <IconModal />
+        <IconModal isOpen={isOpenIcon} cancelFunc={modalCancelFucnIcon} doneFunc={modalDoneFuncIcon} />
       </Modal>
       <Modal isOpen={isOpenImage} ariaHideApp={false} style={modalStyles} contentLabel="set image modal">
-        <ImageModal />
+        <ImageModal isOpen={isOpenImage} cancelFunc={modalCancelFucnImage} doneFunc={modalDoneFuncImage} />
       </Modal>
     </CodeWrapper>
   );
