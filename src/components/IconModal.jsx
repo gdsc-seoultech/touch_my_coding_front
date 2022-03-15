@@ -3,14 +3,24 @@ import styled from "styled-components";
 
 import { Form, Button } from "react-bootstrap";
 
-import { icons } from "./dummy";
+import { iconDbList } from "./iconDb";
+
 const ModalWrapper = styled.div`
   padding: 20px;
+
+  .search-wrapper {
+    display: flex;
+
+    button {
+      margin-left: 30px;
+    }
+  }
 
   .modal-head {
     font-size: 32px;
     font-weight: 700;
     text-align: center;
+    margin-bottom: 20px;
   }
 
   .modal-button-wrapper {
@@ -43,7 +53,14 @@ const ModalWrapper = styled.div`
     background-color: yellow;
   }
   .modal-inner-container {
-    margin: 20px;
+    margin: 20px 0px;
+
+    span {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      margin: 10px;
+    }
   }
   p {
     margin: 10px 0px;
@@ -52,42 +69,24 @@ const ModalWrapper = styled.div`
 
 const IconModal = ({ isOpen, cancelFunc, doneFunc }) => {
   const modalHead = "Input the keyword for search icon";
+
   const [keyword, setKeyword] = useState("");
-  const [isSelected, setIsSelected] = useState(null);
+
   const onChangeKey = (e) => {
     setKeyword(e.target.value);
-  };
-  const onhandelClick = (e, id) => {
-    setIsSelected(id);
   };
 
   return (
     <ModalWrapper>
       <h1 className="modal-head">{modalHead}</h1>
-      <Form.Group>
+      <Form.Group className="search-wrapper">
         <Form.Control type="text" placeholder="enter" value={keyword} onChange={onChangeKey} />
-        {/* <Button variant="primary" type="submit" onClick={searchKey}>
-          Submit
-        </Button> */}
+        <Button>enter</Button>
       </Form.Group>
       <div className="modal-inner-container">
-        {icons
-          .filter((data) => {
-            if (keyword == "") {
-              return data;
-            } else if (data.keyword.includes(keyword)) {
-              return data;
-            }
-          })
-          .map((data) => (
-            <div
-              className={data.id === isSelected ? "modal-inner-boxClicked" : "modal-inner-box"}
-              onClick={(e) => onhandelClick(e, data.id)}
-            >
-              <img src={data.img} alt="img" />
-              <p>{data.keyword}</p>
-            </div>
-          ))}
+        {iconDbList.map((data) => (
+          <span className="material-icons">{data?.spanName}</span>
+        ))}
       </div>
 
       <div className="modal-button-wrapper">
