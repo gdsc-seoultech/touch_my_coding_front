@@ -30,6 +30,18 @@ export const iconDbList = [
   },
   {
     spanName: "expand_more",
-    description: ["down", "arrow", "south"],
+    description: ["down", "arrow", "south", "description"],
+  },
+  {
+    spanName: "arrow_back",
+    description: ["left", "west", "back", "arrow", "description"],
+  },
+  {
+    spanName: "chevron_right",
+    description: ["right", "east", "description"],
+  },
+  {
+    spanName: "cancel",
+    description: ["cancel"],
   },
 ];

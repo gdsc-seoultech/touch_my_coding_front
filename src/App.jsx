@@ -5,12 +5,13 @@ import Result from "@Pages/Result";
 import Apply from "@Pages/Apply";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+
 function App() {
   return (
     <BrowserRouter>
       <Switch>
         <Route exact path="/" component={Main} />
-        <Route exact path="/result" component={Result} />
+        <Route exact path="/result/:uuid" component={Result} />
         <Route exact path="/apply" component={Apply} />
       </Switch>
     </BrowserRouter>

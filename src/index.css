@@ -27,6 +27,10 @@ iframe {
   margin: 0px auto;
 }
 
+iframe html body {
+  margin: 0px;
+}
+
 @font-face {
   font-family: "Material Icons";
   font-style: normal;

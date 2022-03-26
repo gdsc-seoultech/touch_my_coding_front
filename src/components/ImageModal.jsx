@@ -1,10 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
-import { Form, Button, Card, Row, Col } from "react-bootstrap";
-import { images } from "./dummy";
+import { Form, Button } from "react-bootstrap";
+
+import nextIcon from "@Assets/icon/next.svg";
+import { textRead } from "@Utils/TextToSpeech";
+
 const ModalWrapper = styled.div`
   padding: 20px;
+  position: relative;
+
+  .image-guide-button {
+    all: unset;
+    cursor: pointer;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    top: calc(50% - 32px);
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .next-button {
+    right: 0px;
+  }
+
+  .prev-button {
+    left: 0px;
+    transform: rotate(180deg);
+  }
+
+  .search-wrapper {
+    display: flex;
+
+    button {
+      margin-left: 30px;
+    }
+  }
 
   .modal-head {
     font-size: 32px;
@@ -19,8 +54,13 @@ const ModalWrapper = styled.div`
       margin-right: 25px;
     }
   }
-  .modal-inner-container {
+  .modal-result-container {
     margin: 20px;
+
+    img {
+      width: 200px;
+      margin: 0px calc(50% - 100px);
+    }
   }
   .modal-inner-box {
     &:hover {
@@ -32,47 +72,107 @@ const ModalWrapper = styled.div`
   }
 `;
 
-const ImageModal = ({ isOpen, cancelFunc, doneFunc }) => {
+const ImageModal = ({ setImage, cancelFunc, doneFunc }) => {
   const modalHead = "Input the keyword for search image";
+
   const [keyword, setKeyword] = useState("");
-  const [isSelected, setIsSelected] = useState(null);
+  const [imgIdx, setImgIdx] = useState(0);
+
+  const [page, setPage] = useState(0);
+  const [imageList, setImageList] = useState([]);
+  const [max, setMax] = useState(0);
+
   const onChangeKey = (e) => {
     setKeyword(e.target.value);
   };
-  const onhandelClick = (e, id) => {
-    setIsSelected(id);
+
+  const searchImage = async () => {
+    const result = await axios(`/api/image?query=${keyword}&page=${page}`);
+    if (result.data.success) {
+      setImageList(result.data.result);
+      setMax(result.data.total_pages);
+      setImgIdx(0);
+    }
   };
+
+  const onClickEnter = async () => {
+    setPage(0);
+    searchImage();
+  };
+
+  const onClickPrev = async () => {
+    if (imgIdx === 0) {
+      if (page === 0) {
+        textRead("this is the first index");
+      } else {
+        setPage(page - 1);
+        searchImage();
+      }
+    } else {
+      setImgIdx(imgIdx - 1);
+    }
+  };
+
+  const onClickNext = async () => {
+    if (imgIdx === 9) {
+      if (page === max) {
+        textRead("this is the last index");
+      } else {
+        setPage(page + 1);
+        searchImage();
+      }
+    } else {
+      setImgIdx(imgIdx + 1);
+    }
+  };
+
+  useEffect(() => {
+    const getLabel = async () => {
+      const result = await axios({
+        method: "POST",
+        url: "/api/image/label",
+        data: {
+          url: imageList[imgIdx],
+        },
+      });
+      if (result.data.success) {
+        const { label } = result.data;
+        label.map((item) => {
+          textRead(item?.description);
+        });
+      }
+    };
+    getLabel();
+  }, [imageList, imgIdx]);
+
+  useEffect(() => {
+    textRead(modalHead);
+  }, []);
+
   return (
     <ModalWrapper>
+      {imageList.length > 0 && (
+        <div>
+          <button className="prev-button image-guide-button" onClick={onClickPrev}>
+            <img src={nextIcon} alt="." />
+          </button>
+          <button className="next-button image-guide-button" onClick={onClickNext}>
+            <img src={nextIcon} alt="." />
+          </button>
+        </div>
+      )}
       <h1 className="modal-head">{modalHead}</h1>
-      <Form.Group>
-        <Form.Control type="text" placeholder="enter" value={keyword} onChange={onChangeKey} />
+      <Form.Group className="search-wrapper">
+        <Form.Control type="text" placeholder="enter" value={keyword} onChange={onChangeKey} autoFocus={true} />
+        <Button onClick={onClickEnter}>enter</Button>
       </Form.Group>
-      <div className="modal-inner-container">
-        <Row xs={1} md={4} className="g-4">
-          {images
-            .filter((data) => {
-              if (keyword == "") {
-                return data;
-              } else if (data.keyword.includes(keyword)) {
-                return data;
-              }
-            })
-            .map((data) => (
-              <Col>
-                <Card
-                  border="light"
-                  onClick={(e) => onhandelClick(e, data.id)}
-                  className={data.id === isSelected ? "modal-inner-boxClicked" : "modal-inner-box"}
-                >
-                  <Card.Img variant="top" src={data.img} />
-                  <Card.Body>
-                    <Card.Title>{data.keyword}</Card.Title>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-        </Row>
+      {/* <div className="modal-result-container">
+        {imageList.map((item) => (
+          <img src={item} alt="result" key={item} onClick={() => setImage(`<img src='${item}' alt="image" />`)} />
+        ))}
+      </div> */}
+      <div className="modal-result-container">
+        <img src={imageList[imgIdx]} onClick={() => setImage(`<img src=${imageList[imgIdx]} />`)} />
       </div>
       <div className="modal-button-wrapper">
         <Button variant="primary" size="lg" onClick={cancelFunc}>

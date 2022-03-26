@@ -28,9 +28,6 @@ const Header = () => {
             <Link to="/" className={mainLocation ? "" : "active-nav"}>
               Touch my coding
             </Link>
-            <Link to="/apply" className={mainLocation === "apply" ? "active-nav" : ""}>
-              apply
-            </Link>
           </Nav>
         </Container>
       </Navbar>

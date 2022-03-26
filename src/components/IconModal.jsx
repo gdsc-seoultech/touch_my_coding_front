@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import { Form, Button } from "react-bootstrap";
 
+import { textRead } from "@Utils/TextToSpeech";
 import { iconDbList } from "./iconDb";
 
 const ModalWrapper = styled.div`
@@ -55,6 +56,11 @@ const ModalWrapper = styled.div`
   .modal-inner-container {
     margin: 20px 0px;
 
+    button {
+      all: unset;
+      cursor: pointer;
+    }
+
     span {
       font-size: 40px;
       width: 40px;
@@ -67,7 +73,7 @@ const ModalWrapper = styled.div`
   }
 `;
 
-const IconModal = ({ isOpen, cancelFunc, doneFunc }) => {
+const IconModal = ({ setIcon, cancelFunc, doneFunc }) => {
   const modalHead = "Input the keyword for search icon";
 
   const [keyword, setKeyword] = useState("");
@@ -76,17 +82,25 @@ const IconModal = ({ isOpen, cancelFunc, doneFunc }) => {
     setKeyword(e.target.value);
   };
 
+  useEffect(() => {
+    textRead(modalHead);
+  }, []);
+
   return (
     <ModalWrapper>
       <h1 className="modal-head">{modalHead}</h1>
       <Form.Group className="search-wrapper">
-        <Form.Control type="text" placeholder="enter" value={keyword} onChange={onChangeKey} />
+        <Form.Control type="text" placeholder="enter" value={keyword} onChange={onChangeKey} autoFocus={true} />
         <Button>enter</Button>
       </Form.Group>
       <div className="modal-inner-container">
-        {iconDbList.map((data) => (
-          <span className="material-icons">{data?.spanName}</span>
-        ))}
+        {iconDbList
+          .filter((data) => data["description"].includes(keyword))
+          .map((item) => (
+            <button onClick={() => setIcon(`<span class=material-icons>${item.spanName}</span>`)}>
+              <span className="material-icons">{item.spanName}</span>
+            </button>
+          ))}
       </div>
 
       <div className="modal-button-wrapper">
