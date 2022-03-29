@@ -14,7 +14,7 @@ import "codemirror/mode/css/css.js";
 
 ReactDOM.render(
   <React.StrictMode>
-    <SpeechProvider appId="c40c00eb-d5ff-432a-a1af-8e48281db9ca">
+    <SpeechProvider appId={process.env.REACT_APP_ID}>
       <App />
     </SpeechProvider>
   </React.StrictMode>,
