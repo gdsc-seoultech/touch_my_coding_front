@@ -1,16 +1,37 @@
-# 2022 Solution Challenge: Touch My Coding
+# Touch My Coding Front-end-server
 
-## Project Introduction
+## Development Setting
 
-Touch my coding is a platform that helps visually impaired people and others who may have difficulty coding due to problems such as presbyopia.
+Recommend to use recent version of browser. <br/>
+Recommend to use stable node version(v16)
 
-# Used technology
+<br/>
+Refer below commands
 
-- Front-end: React, text to speech, Google Font API
-- Back-end: Flask, mysql, Google Cloud Vision API, Google Cloud
+```
+## download pacakges
+npm install
 
-## How to run
+## development start
+npm start
 
-- after download, you can install package with `npm install`
-- api key setting at .env
-- you can run this code with `npm start`
+## production build
+npm run build
+```
+
+<br/>
+
+## Set Environment files
+
+You need to set the env file with two versions: Development, Production. <br/>
+Set the name with .env_dev for development, .env_prod for production
+<br/>
+
+These values are needed
+
+```
+REACT_APP_ID=
+REACT_APP_SERVER=
+```
+
+REACT_APP_ID is used for text-speech-api. And REACT_APP_SERVER need for proxy backend server url.
